@@ -2,7 +2,7 @@ import User from "../models/user.model.js";   // ✅ Correct Student/User Model
 import Homework from "../models/Homework.js";
 import TimeTable from "../models/TimeTable.js";
 import Attendance from "../models/Attendance_student.js";
-import Exam from "../models/Exam.js";
+import Exam from "../models/exam.js";
 import ExamMarks from "../models/ExamMarks.js";
 
 export const parentDashboard = async (req, res) => {
