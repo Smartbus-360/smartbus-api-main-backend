@@ -385,7 +385,7 @@ import User from "../models/user.model.js";
 import SubjectTeacher from "../models/SubjectTeacher.js";
 import PeriodSlot from "../models/PeriodSlot.js";
 import Homework from "../models/Homework.js";
-import Exam from "../models/Exam.js";
+import Exam from "../models/exam.js";
 import Message from "../models/Message.js";
 import AttendanceStudent from "../models/Attendance_student.js";
 import Subject from "../models/Subject.js";
