@@ -14,7 +14,7 @@ import path from 'path';
 import './cronJobs.js';
 import { setupAssociations } from './models/associations.js';
 import attendanceRoutes from "./routes/attendance.route.js";
-import "./gps/gps.listener.js";
+// import "./gps/gps.listener.js";
 import homeworkRoutes from "./routes/homework.route.js";
 import attendance_studentRoutes from "./routes/attendance_student.route.js";
 import examRoutes from "./routes/exam.route.js";
