@@ -34,6 +34,7 @@ import timetableAdminRoutes from "./routes/timetable_admin.route.js";
 // import { addClass, getClasses, addSection, getSection } from "./controllers/class.controller.js";
 import { httpAuth } from "./middleware/wsAuth.middleware.js";
 import syllabusProgressRoutes from "./routes/syllabusProgress.route.js";
+import studentAnalysisRoutes from "./routes/studentAnalysis.route.js";
 
 
 // Sync models and setup associations
@@ -93,6 +94,7 @@ app.use("/api/admin/timetable", adminTimetableRoutes);
 app.use("/erp/subject", subjectRoutes);
 app.use("/erp/admin/timetable", timetableAdminRoutes);
 app.use("/erp/teacher/syllabus", syllabusProgressRoutes);
+app.use("/erp/teacher/student-analysis", studentAnalysisRoutes);
 
 // router.post("/class", httpAuth, addClass);
 // router.get("/class/list", httpAuth, getClasses);
