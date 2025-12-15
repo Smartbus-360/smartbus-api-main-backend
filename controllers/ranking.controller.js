@@ -60,19 +60,59 @@ export const generateRanking = async (req, res) => {
 /* ------------------------------------------------
    VIEW RANKING (Teacher / Student)
 ------------------------------------------------- */
+// export const getRanking = async (req, res) => {
+//   try {
+//     const { classId, sectionId, examId } = req.query;
+
+//     const ranks = await StudentRank.findAll({
+//       where: { classId, sectionId, examId },
+//       include: [{ model: User, attributes: ["full_name", "registrationNumber"] }],
+//       order: [["rank", "ASC"]]
+//     });
+
+//     res.json({ success: true, ranks });
+
+//   } catch (err) {
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
 export const getRanking = async (req, res) => {
   try {
     const { classId, sectionId, examId } = req.query;
 
+    // ✅ 1. Validate query params
+    if (!classId || !sectionId || !examId) {
+      return res.status(400).json({
+        success: false,
+        message: "classId, sectionId and examId are required"
+      });
+    }
+
+    // ✅ 2. Fetch ranking
     const ranks = await StudentRank.findAll({
       where: { classId, sectionId, examId },
       include: [{ model: User, attributes: ["full_name", "registrationNumber"] }],
       order: [["rank", "ASC"]]
     });
 
+    // ✅ 3. Handle empty ranking safely
+    if (!ranks || ranks.length === 0) {
+      return res.json({
+        success: true,
+        ranks: [],
+        message: "Ranking not generated yet"
+      });
+    }
+
+    // ✅ 4. Normal success
     res.json({ success: true, ranks });
 
   } catch (err) {
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Get ranking error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch ranking"
+    });
   }
 };
+
