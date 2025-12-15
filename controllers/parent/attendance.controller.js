@@ -108,13 +108,13 @@ export const getDailyAttendance = async (req, res) => {
 
 export const getAttendanceSummary = async (req, res) => {
   try {
-    const { studentId } = req.params;
+    const { classId, sectionId } = req.query;
     const { month, year } = req.query;
 
-    if (!month || !year) {
+    if (!classId || !sectionId || !month || !year) {
       return res.status(400).json({
         success: false,
-        message: "month and year are required"
+        message: "classId, sectionId, month and year are required"
       });
     }
 
@@ -124,7 +124,8 @@ export const getAttendanceSummary = async (req, res) => {
 
     const records = await Attendance.findAll({
       where: {
-        studentId,
+         classId,
+        sectionId,
         date: {
           [Op.like]: `${datePrefix}%`
         }
