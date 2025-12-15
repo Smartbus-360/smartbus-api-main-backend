@@ -54,48 +54,45 @@ export const addMarks = async (req, res) => {
 
     for (const m of marks) {
 
-      // 1️⃣ Fetch exam details
+      // 1️⃣ Validate exam exists
       const exam = await Exam.findByPk(m.examId);
       if (!exam) {
         return res.status(404).json({ message: "Exam not found" });
       }
 
-      const subjectValue =
-        exam.subject ??
-        exam.subjectName ??
-        String(exam.subjectId);
-
-      if (!subjectValue) {
-        return res.status(400).json({ message: "Exam subject missing" });
+      // 2️⃣ Validate required payload fields
+      if (!m.subject) {
+        return res.status(400).json({ message: "Subject missing in marks payload" });
       }
 
-      // 3️⃣ Resolve maxMarks
-      const maxMarksValue =
-        exam.maxMarks ??
-        exam.totalMarks;
-
-      if (!maxMarksValue) {
-        return res.status(400).json({ message: "Exam maxMarks missing" });
+      if (m.maxMarks == null) {
+        return res.status(400).json({ message: "MaxMarks missing in marks payload" });
       }
 
-      // 2️⃣ Create marks using exam data
+      if (m.marksObtained == null) {
+        return res.status(400).json({ message: "MarksObtained missing" });
+      }
+
+      // 3️⃣ Create marks (USE PAYLOAD, NOT EXAM)
       await ExamMarks.create({
-        examId: exam.id,
+        examId: m.examId,
         studentId: m.studentId,
-        subject: exam.subjectId,     // or exam.subject
-        maxMarks: exam.totalMarks,   // comes from exam
+        subject: String(m.subject),   // ✅ FROM CURL
+        maxMarks: m.maxMarks,         // ✅ FROM CURL
         marksObtained: m.marksObtained
       });
     }
 
-    res.json({ success: true, message: "Marks added successfully" });
+    return res.json({
+      success: true,
+      message: "Marks added successfully"
+    });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: err.message });
+    console.error("Add marks error:", err);
+    return res.status(500).json({ message: err.message });
   }
 };
-
 
 export const getStudentResults = async (req, res) => {
   try {
