@@ -60,6 +60,24 @@ export const addMarks = async (req, res) => {
         return res.status(404).json({ message: "Exam not found" });
       }
 
+      const subjectValue =
+        exam.subject ??
+        exam.subjectName ??
+        String(exam.subjectId);
+
+      if (!subjectValue) {
+        return res.status(400).json({ message: "Exam subject missing" });
+      }
+
+      // 3️⃣ Resolve maxMarks
+      const maxMarksValue =
+        exam.maxMarks ??
+        exam.totalMarks;
+
+      if (!maxMarksValue) {
+        return res.status(400).json({ message: "Exam maxMarks missing" });
+      }
+
       // 2️⃣ Create marks using exam data
       await ExamMarks.create({
         examId: exam.id,
