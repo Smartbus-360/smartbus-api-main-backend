@@ -84,7 +84,11 @@ export const updateHomework = async (req, res) => {
     const teacherId = req.user.id;
     const { id } = req.params;
 
-    const homework = await Homework.findOne({ where: { id, teacherId } });
+    // const homework = await Homework.findOne({ where: { id, teacherId } });
+     const homework = await Homework.findOne({
+  where: { id, createdBy: teacherId }
+});
+
 
     if (!homework) {
       return res.status(404).json({ success: false, message: "Homework not found or not yours" });
@@ -109,7 +113,11 @@ export const deleteHomework = async (req, res) => {
     const teacherId = req.user.id;
     const { id } = req.params;
 
-    const homework = await Homework.findOne({ where: { id, teacherId } });
+    // const homework = await Homework.findOne({ where: { id, teacherId } });
+
+     const homework = await Homework.findOne({
+  where: { id, createdBy: teacherId }
+});
 
     if (!homework) {
       return res.status(404).json({ success: false, message: "Homework not found or not yours" });
