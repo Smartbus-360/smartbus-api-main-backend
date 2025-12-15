@@ -18,31 +18,66 @@ export const createExam = async (req, res) => {
   }
 };
 
+// export const addMarks = async (req, res) => {
+//   try {
+//     const { examId, marks } = req.body;
+
+//     /*
+//       marks = [
+//         { studentId: 1, subject: "Maths", marksObtained: 90, maxMarks: 100 }
+//       ]
+//     */
+
+//     for (let m of marks) {
+//       await ExamMarks.create({
+//         examId,
+//         studentId: m.studentId,
+//         subject: m.subject,
+//         marksObtained: m.marksObtained,
+//         maxMarks: m.maxMarks
+//       });
+//     }
+
+//     res.json({ success: true, message: "Marks added" });
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
 export const addMarks = async (req, res) => {
   try {
-    const { examId, marks } = req.body;
+    const { marks } = req.body;
 
-    /*
-      marks = [
-        { studentId: 1, subject: "Maths", marksObtained: 90, maxMarks: 100 }
-      ]
-    */
+    if (!Array.isArray(marks) || marks.length === 0) {
+      return res.status(400).json({ message: "Marks array required" });
+    }
 
-    for (let m of marks) {
+    for (const m of marks) {
+
+      // 1️⃣ Fetch exam details
+      const exam = await Exam.findByPk(m.examId);
+      if (!exam) {
+        return res.status(404).json({ message: "Exam not found" });
+      }
+
+      // 2️⃣ Create marks using exam data
       await ExamMarks.create({
-        examId,
+        examId: exam.id,
         studentId: m.studentId,
-        subject: m.subject,
-        marksObtained: m.marksObtained,
-        maxMarks: m.maxMarks
+        subject: exam.subjectId,     // or exam.subject
+        maxMarks: exam.totalMarks,   // comes from exam
+        marksObtained: m.marksObtained
       });
     }
 
-    res.json({ success: true, message: "Marks added" });
+    res.json({ success: true, message: "Marks added successfully" });
+
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: err.message });
   }
 };
+
 
 export const getStudentResults = async (req, res) => {
   try {
