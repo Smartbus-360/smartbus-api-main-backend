@@ -14,16 +14,29 @@ export const getMonthlyAttendance = async (req, res) => {
       });
     }
 
-    const startDate = new Date(year, month - 1, 1);
-    const endDate   = new Date(year, month, 0); // last day of month
+    // const startDate = new Date(year, month - 1, 1);
+    // const endDate   = new Date(year, month, 0); // last day of month
 
-    const attendance = await Attendance.findAll({
-      where: {
-        studentId,
-        date: { [Op.between]: [startDate, endDate] }
-      },
-      order: [["date", "ASC"]]
-    });
+    // const attendance = await Attendance.findAll({
+    //   where: {
+    //     studentId,
+    //     date: { [Op.between]: [startDate, endDate] }
+    //   },
+    //   order: [["date", "ASC"]]
+    // });
+    const monthStr = month.toString().padStart(2, "0");
+const datePrefix = `${year}-${monthStr}`;
+
+const attendance = await Attendance.findAll({
+  where: {
+    studentId,
+    date: {
+      [Op.like]: `${datePrefix}%`
+    }
+  },
+  order: [["date", "ASC"]]
+});
+
 
     return res.json({ success: true, attendance });
 
@@ -58,25 +71,63 @@ export const getDailyAttendance = async (req, res) => {
 };
 
 // ------------------------- SUMMARY (P/A/L/E) -------------------------
+// export const getAttendanceSummary = async (req, res) => {
+//   try {
+//     const { studentId } = req.params;
+//     const { month, year } = req.query;
+
+//     if (!month || !year) {
+//       return res.status(400).json({ 
+//         success: false, 
+//         message: "month and year are required" 
+//       });
+//     }
+
+//     const startDate = new Date(year, month - 1, 1);
+//     const endDate   = new Date(year, month, 0);
+
+//     const records = await Attendance.findAll({
+//       where: {
+//         studentId,
+//         date: { [Op.between]: [startDate, endDate] }
+//       }
+//     });
+
+//     let summary = { P: 0, A: 0, L: 0, E: 0 };
+
+//     records.forEach(r => {
+//       summary[r.status] = (summary[r.status] || 0) + 1;
+//     });
+
+//     res.json({ success: true, summary });
+
+//   } catch (err) {
+//     res.status(500).json({ success: false, message: err.message });
+//   }
+// };
+
 export const getAttendanceSummary = async (req, res) => {
   try {
     const { studentId } = req.params;
     const { month, year } = req.query;
 
     if (!month || !year) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "month and year are required" 
+      return res.status(400).json({
+        success: false,
+        message: "month and year are required"
       });
     }
 
-    const startDate = new Date(year, month - 1, 1);
-    const endDate   = new Date(year, month, 0);
+    // 🔥 FIX: build YYYY-MM
+    const monthStr = month.toString().padStart(2, "0");
+    const datePrefix = `${year}-${monthStr}`;
 
     const records = await Attendance.findAll({
       where: {
         studentId,
-        date: { [Op.between]: [startDate, endDate] }
+        date: {
+          [Op.like]: `${datePrefix}%`
+        }
       }
     });
 
@@ -86,9 +137,10 @@ export const getAttendanceSummary = async (req, res) => {
       summary[r.status] = (summary[r.status] || 0) + 1;
     });
 
-    res.json({ success: true, summary });
+    return res.json({ success: true, summary });
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ success: false, message: err.message });
   }
 };
